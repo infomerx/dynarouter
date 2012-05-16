@@ -66,7 +66,7 @@ property:
           callback null, "This just represents a car. It's not a real car."
 
 There. Browsing to '/vehicles' is now enabled, through the GET function. You can similarly enable 
-other HTTP methods by adding PUT, DELETE & POST methods wherever you want.
+other HTTP methods by adding PUT, DELETE & POST properties wherever you want.
 
 ## URL parameters
 

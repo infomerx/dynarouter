@@ -13,7 +13,6 @@ Let's suppose we want to route the URL '/simple' to some function. To do so we c
         callback null, "Hello World!"
 
     http = require 'http'
-    server = http.createServer (req, res) ->
     server = http.createServer dynarouter.requestHandler myLogicProvider
     server.listen 8080
 

@@ -29,7 +29,7 @@ app = express.createServer()
 app.configure ->
   @use dynarouter.middleware myLogicProvider
 
-app.configure 'development', ->
+app.configure 'development', () ->
   @use express.errorHandler 
     dumpExceptions:true
     showStack:true
@@ -115,7 +115,7 @@ The separator character '/' can be configured to be anything else, but you shoul
 conventions. '.' and '-' comes to mind.
 
 ```coffeescript
-app.configure ->
+app.configure () ->
   @use dynarouter.middleware '.', myLogicProvider     # use '.' as a path separator
 ```
 

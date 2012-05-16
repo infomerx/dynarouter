@@ -100,7 +100,13 @@ logicProvider =
         callback null, "Listing for category #{req.params.category}, page #{req.params.page}."
 ```
 
-In example above, we're capturing two parameters: 'category' and 'page'.
+In example above, we're capturing two parameters: 'category' and 'page' through the URL 
+pattern '/listings/:category/:page'.
+
+## Validation
+
+URL parameters can be validated during routing, either with a regular expression, or by checking
+a database, or by doing whatever you can do during a function call.
 
 ## Some Internals
 

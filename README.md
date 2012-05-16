@@ -154,4 +154,8 @@ VPs on the other hand are all about responses, and once the LP has done its thin
 object, it's the VP's turn to respond, and usually it's already configured to do so using the appropriate
 response for whatever client type is doing the request. This is all taken care of by Dynarouter.
 
+In the end, what this means is that you can truly realize the concept of one URL per resource, for all device 
+and client types. The resource is not the JSON, or the HTML, but the data contained within, and now it's all
+in one place, irrespective of what is making the request.
+
  * More documentation coming...

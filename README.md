@@ -6,45 +6,51 @@ Dynamic router for Node.js that maps URLs to functions in objects on a per-reque
 
 Let's suppose we want to route the URL '/simple' to some function. To do so we create the following javascript object *(however I'll provide examples in coffeescript for brevity)*:
 
-    dynarouter = require 'dynarouter'
-    
-    myLogicProvider =
-      simple: (req, callback) ->
-        callback null, "Hello World!"
+```coffeescript
+dynarouter = require 'dynarouter'
 
-    http = require 'http'
-    server = http.createServer dynarouter.requestHandler myLogicProvider
-    server.listen 8080
+myLogicProvider =
+  simple: (req, callback) ->
+    callback null, "Hello World!"
+
+http = require 'http'
+server = http.createServer dynarouter.requestHandler myLogicProvider
+server.listen 8080
+```
 
 That's it. Starting node and browsing to http://localhost:8080/simple will respond 
 with the following JSON: "Hello World!"
 
 Middleware is also provided so that the router may run in Connect/Express:
 
-    express = require 'express'
-    app = express.createServer()
-    app.configure ->
-      @use dynarouter.middleware myLogicProvider
+```coffeescript
+express = require 'express'
+app = express.createServer()
+app.configure ->
+  @use dynarouter.middleware myLogicProvider
 
-    app.configure 'development', ->
-      @use express.errorHandler 
-        dumpExceptions:true
-        showStack:true
+app.configure 'development', ->
+  @use express.errorHandler 
+    dumpExceptions:true
+    showStack:true
 
-    app.listen 8081
+app.listen 8081
+```
 
 ## Nesting
 
 We can build more complex objects.
 
-    logicProvider =
-      vehicles:
-        planes: (req, callback) ->
-          callback null, "This is not a plane."
-        trains: (req, callback) ->
-          callback null, "This is not a train."
-        automobiles: (req, callback) ->
-          callback null, "This just represents a car. It's not a real car."
+```coffeescript
+logicProvider =
+  vehicles:
+    planes: (req, callback) ->
+      callback null, "This is not a plane."
+    trains: (req, callback) ->
+      callback null, "This is not a train."
+    automobiles: (req, callback) ->
+      callback null, "This just represents a car. It's not a real car."
+```
 
 Browsing to '/vehicles/planes', '/vehicles/trains' & '/vehicles/automobiles' will return 
 their respective JSON responses. However, browsing to '/vehicles' will return a 404 response.
@@ -54,16 +60,18 @@ their respective JSON responses. However, browsing to '/vehicles' will return a 
 To enable some sort of response at '/vehicles' we can add a GET property to the 'vehicles' 
 property:
 
-    logicProvider =
-      vehicles:
-        GET: (req, callback) ->
-          callback null, "You may be expecting a vehicle list. Perhaps later..."
-        planes: (req, callback) ->
-          callback null, "This is not a plane."
-        trains: (req, callback) ->
-          callback null, "This is not a train."
-        automobiles: (req, callback) ->
-          callback null, "This just represents a car. It's not a real car."
+```coffeescript
+logicProvider =
+  vehicles:
+    GET: (req, callback) ->
+      callback null, "You may be expecting a vehicle list. Perhaps later..."
+    planes: (req, callback) ->
+      callback null, "This is not a plane."
+    trains: (req, callback) ->
+      callback null, "This is not a train."
+    automobiles: (req, callback) ->
+      callback null, "This just represents a car. It's not a real car."
+```
 
 There. Browsing to '/vehicles' is now enabled, through the GET function. You can similarly enable 
 other HTTP methods by adding PUT, DELETE & POST properties wherever you want.
@@ -72,21 +80,25 @@ other HTTP methods by adding PUT, DELETE & POST properties wherever you want.
 
 We can also capture parts of the URL as parameters.
 
-    logicProvider =
-      users:
-        $: name: 'id'
-        id: (req, callback) ->
-          callback null, "The user ID is: #{req.params.id}"
+```coffeescript
+logicProvider =
+  users:
+    $: name: 'id'
+    id: (req, callback) ->
+      callback null, "The user ID is: #{req.params.id}"
+```
 
 We can now browse to, say, '/users/1234' and we'll get JSON for "The user ID is: 1234".
 
-    logicProvider =
-      listing:
-        $: name: 'category'
-        category:
-          $: name: 'page'
-          page: (req, callback) ->
-            callback null, "Listing for category #{req.params.category}, page #{req.params.page}."
+```coffeescript
+logicProvider =
+  listing:
+    $: name: 'category'
+    category:
+      $: name: 'page'
+      page: (req, callback) ->
+        callback null, "Listing for category #{req.params.category}, page #{req.params.page}."
+```
 
 In example above, we're capturing two parameters: 'category' and 'page'.
 
@@ -102,21 +114,25 @@ the case, it stores the value in req.params. Simple, right?
 The separator character '/' can be configured to be anything else, but you should use sensible
 conventions. '.' and '-' comes to mind.
 
-    app.configure ->
-      @use dynarouter.middleware '.', myLogicProvider     # use '.' as a path separator
+```coffeescript
+app.configure ->
+  @use dynarouter.middleware '.', myLogicProvider     # use '.' as a path separator
+```
 
 We can build logic providers as complex as we want.
 
-    logicProvider =
-      articles:
+```coffeescript
+logicProvider =
+  articles:
+    GET: (req, cb) ->
+      cb null, 'A listing. But really, build your own, this is just an example.'
+    $: name: 'id'
+    id: 
+      tag: 
+        $: name: 'tag'
         GET: (req, cb) ->
-          cb null, 'A listing. But really, build your own, this is just an example.'
-        $: name: 'id'
-        id: 
-          tag: 
-            $: name: 'tag'
-            GET: (req, cb) ->
-              cb null, req.params
+          cb null, req.params
+```
 
 Here we're mapping URLs of the type '/articles/:id/tag/:tag' (I'm using express routing syntax here).
 
